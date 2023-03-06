@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html><<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Babylon Template</title>
-
+        <title>Babylon Test</title>
         <style>
             html, body {
                 overflow: hidden;
@@ -13,24 +10,19 @@
                 margin: 0;
                 padding: 0;
             }
-
             #renderCanvas {
                 width: 100%;
                 height: 100%;
                 touch-action: none;
             }
         </style>
-
         <script src="babylon.js"></script>
         <script src="babylon.gui.min.js"></script>
         <script src="babylon.loaders.js"></script>
-
     </head>
-
    <body>
 
 	<canvas id="renderCanvas"></canvas>
-
 	<script>
         const canvas = document.getElementById("renderCanvas"); // Get the canvas element
         const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
@@ -39,24 +31,60 @@
             // This creates a basic Babylon Scene object (non-mesh)
             const scene = new BABYLON.Scene(engine);
 
-            // This creates and positions a free camera (non-mesh)
-            const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-
-            // This targets the camera to scene origin
-            camera.setTarget(BABYLON.Vector3.Zero());
-
-            // This attaches the camera to the canvas
+            var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0.8, 90, BABYLON.Vector3.Zero(), scene);
+            camera.lowerBetaLimit = 0.1;
+            camera.upperBetaLimit = (Math.PI / 2) * 0.9;
+            camera.lowerRadiusLimit = 1;
+            camera.upperRadiusLimit = 150;
             camera.attachControl(canvas, true);
+        	
+            // light1
+            var light1 = new BABYLON.DirectionalLight("Light1", new BABYLON.Vector3(0.5, -1, 0.5));
+            light1.position = new BABYLON.Vector3(0, 100, 0);
+            light1.intensity = 2.0;
+            light1.shadowMaxZ = 250;
+	        // light1.shadowMinZ = 20;
 
-            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            var light2 = new BABYLON.DirectionalLight("Light2", new BABYLON.Vector3(-1, -1, -1));
+            light2.intensity = 4.0;
+            light2.position = new BABYLON.Vector3(0, 100, 0);
 
-            // Default intensity is 1. Let's dim the light a small amount
-            light.intensity = 0.7;
+            // Shadows
+            var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
+            shadowGenerator.useKernelBlur = true;
+            shadowGenerator.blurKernel = 64;
+            shadowGenerator.useContactHardeningShadow = true;
+
+            const pbr = new BABYLON.PBRMaterial("SphereMat", scene);
+            pbr.metallic = 0;
+            pbr.roughness = 0;
+            pbr.subSurface.isRefractionEnabled = true;
+            pbr.subSurface.refractionIntensity = 1.8;
+            // pbr.subSurface.scatteringDiffusionProfile = new BABYLON.Color3(0.75, 0.25, 0.2);
             
-            // Load meshes
-            BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "scene.babylon");
-            
+            BABYLON.SceneLoader.ImportMeshAsync(null, "/models/", "assisi_-_city_scene_assignment.glb", scene).then((result) =>{
+                const root = result.meshes[0];
+                root.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+                root.getChildMeshes().forEach(m => {
+                    // m.material = pbr;
+                    m.receiveShadows = true;
+                    m.checkCollisions = true;
+                    shadowGenerator.addShadowCaster(m);
+                })
+            });            
+
+            BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
+                const root = result.meshes[0];
+                root.position = new BABYLON.Vector3(0, 20, 0);
+                scene.animationGroups[0].start(true);  
+
+                root.getChildMeshes().forEach(m => {
+                    m.receiveShadows = true;
+                    m.checkCollisions = true;
+                    shadowGenerator.addShadowCaster(m);
+                })
+            });
+
             return scene;
         };
 
@@ -73,7 +101,12 @@
         });
 	</script>
 
-    <script src="scripts/sliderGui.js"></script>
+    <!-- <script src="scripts/sliderGui.js"></script> -->
+
+   </body>
+        engine.resize();
+        });
+	</script>
 
    </body>
 
