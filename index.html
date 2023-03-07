@@ -39,7 +39,7 @@
             camera.attachControl(canvas, true);
         	
             // light1
-            var light1 = new BABYLON.DirectionalLight("Light1", new BABYLON.Vector3(110, 0, 0));
+            var light1 = new BABYLON.DirectionalLight("Light1", new BABYLON.Vector3(110, 0, 0), scene);
             light1.position = new BABYLON.Vector3(0, 20, 0);
             light1.intensity = 1.0;
             // light1.shadowMaxZ = 250;
@@ -50,10 +50,10 @@
             // light2.position = new BABYLON.Vector3(0, 100, 0);
 
             // Shadows
-            var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
-            shadowGenerator.useKernelBlur = true;
-            shadowGenerator.blurKernel = 64;
-            shadowGenerator.useContactHardeningShadow = true;
+            // var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
+            // shadowGenerator.useKernelBlur = true;
+            // shadowGenerator.blurKernel = 64;
+            // shadowGenerator.useContactHardeningShadow = true;
 
             // const pbr = new BABYLON.PBRMaterial("SphereMat", scene);
             // pbr.metallic = 0;
@@ -67,11 +67,23 @@
                 root.scaling.scaleInPlace(0.01);
                 root.getChildMeshes().forEach(m => {
                     // m.material = pbr;
-                    m.receiveShadows = true;
+                    // m.receiveShadows = true;
                     // m.checkCollisions = true;
-                    shadowGenerator.addShadowCaster(m);
+                    // shadowGenerator.addShadowCaster(m);
                 })
-            });            
+            });        
+            
+            BABYLON.SceneLoader.ImportMeshAsync(null, "/models/", "POC_avata_for_mixamo_Texting_And_Walking_Full.glb", scene).then((result) =>{
+                const root = result.meshes[0];
+                root.position = new BABYLON.Vector3(-5.5, 4.2, 0);
+                // root.scaling.scaleInPlace(0.0254);
+                root.getChildMeshes().forEach(m => {
+                    // m.material = pbr;
+                    // m.receiveShadows = true;
+                    // m.checkCollisions = true;
+                    // shadowGenerator.addShadowCaster(m);
+                })
+            });     
 
             // BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
             //     const root = result.meshes[0];
