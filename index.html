@@ -39,15 +39,15 @@
             camera.attachControl(canvas, true);
         	
             // light1
-            var light1 = new BABYLON.DirectionalLight("Light1", new BABYLON.Vector3(0.5, -1, 0.5));
-            light1.position = new BABYLON.Vector3(0, 100, 0);
-            light1.intensity = 2.0;
-            light1.shadowMaxZ = 250;
+            var light1 = new BABYLON.DirectionalLight("Light1", new BABYLON.Vector3(110, 0, 0));
+            light1.position = new BABYLON.Vector3(0, 20, 0);
+            light1.intensity = 1.0;
+            // light1.shadowMaxZ = 250;
 	        // light1.shadowMinZ = 20;
 
-            var light2 = new BABYLON.DirectionalLight("Light2", new BABYLON.Vector3(-1, -1, -1));
-            light2.intensity = 4.0;
-            light2.position = new BABYLON.Vector3(0, 100, 0);
+            // var light2 = new BABYLON.DirectionalLight("Light2", new BABYLON.Vector3(-1, -1, -1));
+            // light2.intensity = 4.0;
+            // light2.position = new BABYLON.Vector3(0, 100, 0);
 
             // Shadows
             var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
@@ -55,35 +55,35 @@
             shadowGenerator.blurKernel = 64;
             shadowGenerator.useContactHardeningShadow = true;
 
-            const pbr = new BABYLON.PBRMaterial("SphereMat", scene);
-            pbr.metallic = 0;
-            pbr.roughness = 0;
-            pbr.subSurface.isRefractionEnabled = true;
-            pbr.subSurface.refractionIntensity = 1.8;
+            // const pbr = new BABYLON.PBRMaterial("SphereMat", scene);
+            // pbr.metallic = 0;
+            // pbr.roughness = 0;
+            // pbr.subSurface.isRefractionEnabled = true;
+            // pbr.subSurface.refractionIntensity = 1.8;
             // pbr.subSurface.scatteringDiffusionProfile = new BABYLON.Color3(0.75, 0.25, 0.2);
             
             BABYLON.SceneLoader.ImportMeshAsync(null, "/models/", "assisi_-_city_scene_assignment.glb", scene).then((result) =>{
                 const root = result.meshes[0];
-                root.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+                root.scaling.scaleInPlace(0.01);
                 root.getChildMeshes().forEach(m => {
                     // m.material = pbr;
                     m.receiveShadows = true;
-                    m.checkCollisions = true;
+                    // m.checkCollisions = true;
                     shadowGenerator.addShadowCaster(m);
                 })
             });            
 
-            BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
-                const root = result.meshes[0];
-                root.position = new BABYLON.Vector3(0, 20, 0);
-                scene.animationGroups[0].start(true);  
+            // BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
+            //     const root = result.meshes[0];
+            //     root.position = new BABYLON.Vector3(0, 20, 0);
+            //     scene.animationGroups[0].start(true);  
 
-                root.getChildMeshes().forEach(m => {
-                    m.receiveShadows = true;
-                    m.checkCollisions = true;
-                    shadowGenerator.addShadowCaster(m);
-                })
-            });
+            //     root.getChildMeshes().forEach(m => {
+            //         m.receiveShadows = true;
+            //         m.checkCollisions = true;
+            //         shadowGenerator.addShadowCaster(m);
+            //     })
+            // });
 
             return scene;
         };
