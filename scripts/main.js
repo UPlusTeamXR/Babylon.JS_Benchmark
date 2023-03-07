@@ -23,7 +23,7 @@ const createLight = function (position, scene) {
     return light;
 }
 
-const createShadows = function (light, scene) {
+const createShadows = function (light) {
     var shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
 
     shadowGenerator.useKernelBlur = true;
@@ -34,29 +34,27 @@ const createShadows = function (light, scene) {
 }
 
 const createPBRMaterial = function (name, scene) {
-    const pbrMaterial = new BABYLON.PBRMaterial(name, scene);
+    const pbr = new BABYLON.PBRMaterial(name, scene);
 
+    pbr.baseColor = new BABYLON.Color3(1.0, 0.766, 0.336);
     pbr.metallic = 0;
-    pbr.roughness = 0;
-    pbr.subSurface.isRefractionEnabled = true;
-    pbr.subSurface.refractionIntensity = 1.8;
-    pbr.subSurface.scatteringDiffusionProfile = new BABYLON.Color3(0.75, 0.25, 0.2);
+    pbr.roughness = 1.0;
 
-    return pbrMaterial;
+    return pbr;
 }
 
 const createScene = function () {
     const scene = new BABYLON.Scene(engine);
     const camera = createCamera(scene);
     const light = createLight(new BABYLON.Vector3(0, 20, 0), scene);
-    const shadowGenerator = createShadows(light, scene);
-    // const pbrMaterial = createPBRMaterial("Standard", scene);
+    const shadowGenerator = createShadows(light);
+    const pbrMaterial = createPBRMaterial("skyBox", scene);
     
     BABYLON.SceneLoader.ImportMeshAsync(null, "/models/", "assisi_-_city_scene_assignment.glb", scene).then((result) =>{
         const root = result.meshes[0];
         root.scaling.scaleInPlace(0.01);
         root.getChildMeshes().forEach(m => {
-            // m.material = pbrMaterial;
+            m.material = pbrMaterial;
             m.receiveShadows = true;
             // m.checkCollisions = true;
             shadowGenerator.addShadowCaster(m);
@@ -67,23 +65,24 @@ const createScene = function () {
         const root = result.meshes[0];
         root.position = new BABYLON.Vector3(-5.5, 4.2, 0); // test
         root.getChildMeshes().forEach(m => {
-            // m.material = pbrMaterial;
+            m.material = pbrMaterial;
             m.receiveShadows = true;
             // m.checkCollisions = true;
             shadowGenerator.addShadowCaster(m);
         })
     });     
 
-    // BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
-    //     const root = result.meshes[0];
-    //     root.position = new BABYLON.Vector3(0, 20, 0);
-    //     scene.animationGroups[0].start(true);  
-    //     root.getChildMeshes().forEach(m => {
-    //         m.receiveShadows = true;
-    //         m.checkCollisions = true;
-    //         shadowGenerator.addShadowCaster(m);
-    //     })
-    // });
+    BABYLON.SceneLoader.ImportMeshAsync(null, "https://models.babylonjs.com/", "shark.glb", scene).then((result) => {
+        const root = result.meshes[0];
+        root.position = new BABYLON.Vector3(0, 20, 0);
+        scene.animationGroups[0].start(true);  
+        root.getChildMeshes().forEach(m => {
+            m.material = pbrMaterial;
+            m.receiveShadows = true;
+            // m.checkCollisions = true;
+            shadowGenerator.addShadowCaster(m);
+        })
+    });
 
     return scene;
 };
