@@ -135,8 +135,6 @@
             // https://microsoft.github.io/mixed-reality-extension-sdk/classes/vector3.html#rotatebyquaterniontoref
             direction.rotateByQuaternionToRef(quaternion, rotationEuler);
         
-            // light.diffuse = new BABYLON.Color3.FromHexString('#FFFFFF');
-            // light.position = position;
             light.direction = rotationEuler;
         })
 
