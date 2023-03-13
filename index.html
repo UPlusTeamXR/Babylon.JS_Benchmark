@@ -53,6 +53,8 @@
         camera.upperBetaLimit = (Math.PI / 2) * 0.9;
         camera.lowerRadiusLimit = 1;
         camera.upperRadiusLimit = 150;
+        camera.minZ = 0.01;
+        camera.maxZ = 1000;
         camera.attachControl(canvas, true);
                
         var position = new BABYLON.Vector3(0, 20, 0);
@@ -117,22 +119,29 @@
             })
         });     
 
+        let axis = 0;
+        scene.registerBeforeRender(function(){
+            // direction vector
+            const direction = new BABYLON.Vector3(0, -1, 0);
+
+            let xRadian = 30 * Math.PI / 180;
+            let yRadian = 30 * Math.PI / 180;
+            let zRadian = axis++ * Math.PI / 180;
+        
+            // https://doc.babylonjs.com/typedoc/classes/BABYLON.Quaternion
+            const quaternion = BABYLON.Quaternion.RotationYawPitchRoll(zRadian, yRadian, xRadian);
+            let rotationEuler = BABYLON.Vector3.Zero();
+        
+            // https://microsoft.github.io/mixed-reality-extension-sdk/classes/vector3.html#rotatebyquaterniontoref
+            direction.rotateByQuaternionToRef(quaternion, rotationEuler);
+        
+            // light.diffuse = new BABYLON.Color3.FromHexString('#FFFFFF');
+            // light.position = position;
+            light.direction = rotationEuler;
+        })
+
         // Register a render loop to repeatedly render the scene
         engine.runRenderLoop(function () {           
-            // direction vector
-            // const direction = new BABYLON.Vector3(0, -1, 0);
-
-            // let xRadian = 30 * Math.PI / 180;
-            // let yRadian = 30 * Math.PI / 180;
-            // let zRadian = 30 * Math.PI / 180;
-
-            // // https://doc.babylonjs.com/typedoc/classes/BABYLON.Quaternion
-            // const quaternion = BABYLON.Quaternion.RotationYawPitchRoll(zRadian, yRadian, xRadian);
-            // let rotationEuler = BABYLON.Vector3.Zero();
-
-            // console.log(rotationEuler);
-            // light.direction = rotationEuler;
-
             scene.render();                
         });
 
